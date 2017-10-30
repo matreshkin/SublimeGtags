@@ -135,6 +135,15 @@ def gtags_jump_keyword(view, keywords, root, showpanel=False):
     def on_select(index):
         if index != -1:
             jump(keywords[index])
+        else:
+            view.window().focus_view(view)
+
+    def on_highlight(index):
+        if index >= 0:
+            keyword = keywords[index]
+            position = '%s:%d:0' % (
+                os.path.normpath(keyword['path']), int(keyword['linenum']))
+            view.window().open_file(position, sublime.ENCODED_POSITION | sublime.TRANSIENT)
 
     if showpanel or len(keywords) > 1:
         if settings.get('show_relative_paths'):
@@ -145,7 +154,7 @@ def gtags_jump_keyword(view, keywords, root, showpanel=False):
             [kw['signature'], '%s:%d' % (convert_path(kw['path']), int(kw['linenum']))]
              for kw in keywords
         ]
-        view.window().show_quick_panel(data, on_select)
+        view.window().show_quick_panel(data, on_select, sublime.MONOSPACE_FONT, -1, on_highlight)
     else:
         jump(keywords[0])
 
